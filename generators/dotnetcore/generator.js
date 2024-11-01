@@ -4,9 +4,7 @@ import BaseApplicationGenerator from 'generator-jhipster/generators/base-applica
 import { createBase64Secret } from 'generator-jhipster/generators/base/support';
 import { getEnumInfo } from 'generator-jhipster/generators/base-application/support';
 
-import { getNullableResolvedType, getNullableResolvedPrimaryKeyType, isNumericPrimaryKey, getPrimaryKeyType } from '../utils.js';
-import command from './command.js';
-import { serverFiles } from './files.js';
+import { getNullableResolvedPrimaryKeyType, getNullableResolvedType, getPrimaryKeyType, isNumericPrimaryKey } from '../utils.js';
 import {
   PROJECT_APPLICATION_SUFFIX,
   PROJECT_CROSSCUTTING_SUFFIX,
@@ -18,6 +16,8 @@ import {
   SERVER_SRC_DIR,
   SERVER_TEST_DIR,
 } from '../generator-dotnetcore-constants.js';
+import command from './command.js';
+import { serverFiles } from './files.js';
 import { entityCommonFiles, entityFiles } from './entity-files.js';
 
 export default class extends BaseApplicationGenerator {
@@ -188,6 +188,7 @@ export default class extends BaseApplicationGenerator {
           devDependencies: {
             concurrently: application.nodeDependencies.concurrently,
           },
+          workspaces: [application.clientRootDir],
           scripts: {
             'ci:e2e:server:start': 'docker compose -f docker/app.yml up --wait',
             'ci:e2e:run': 'concurrently -k -s first "npm run ci:e2e:server:start" "npm run e2e:headless"',
@@ -260,7 +261,7 @@ export default class extends BaseApplicationGenerator {
     try {
       await access(`${solutionName}.sln`);
       return true;
-    } catch (error) {
+    } catch {
       return this.spawnCommand(`dotnet new sln --name ${solutionName}`);
     }
   }
